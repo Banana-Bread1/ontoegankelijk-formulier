@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>je mag niet uitloggen</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #7bff00;
+      color: #a6ff00;
+    }
+    .navbar {
+      background-color: #ffffff;
+    }
+    .navbar-brand {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #fc0000 !important;
+    }
+    .navbar-nav .nav-item .btn-outline-danger {
+      color: #ffffff;
+      border-color: #ff0000;
+    }
+    .navbar-nav .nav-item .btn-outline-danger:hover {
+      background-color: #ff0000;
+      color: #ffffff;
+    }
+    #logout {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: none;
+      transition: all 0.2s;
+    }
+    .modal-content {
+      background-color: #4fff09;
+      color: #ff0000;
+    }
+    .btn-primary {
+      background-color: #007bff;
+      border-color: #400942;
+    }
+    .btn-primary:hover {
+      background-color: #04e710;
+      border-color: #81beff;
+    }
+    .form-control {
+      background-color: #333333;
+      color: #ffffff;
+      border: 1px solid #555555;
+    }
+    .form-control:focus {
+      background-color: #701c1c;
+      color: #ffffff;
+      border-color: #007bff;
+    }
+    .fullscreen-popup {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(247, 0, 0, 0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .f11-popup {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      color: #000000;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="#">To Fast</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <button class="btn btn-outline-danger" data-toggle="modal" data-target="#logoutModal">Sign Out</button>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container text-center mt-5">
+    <h1>niet eens proberen uit te loggen</h1>
+  </div>
+
+  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="logoutModalLabel">Confirm Sign Out</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="accountForm">
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input type="text" class="form-control" id="username" required>
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" class="form-control" id="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button id="logout" class="btn btn-danger">Logout</button>
+
+  <div class="fullscreen-popup" id="fullscreenPopup">
+    <img src="win-10-bsod.jpg" alt="Fullscreen Image">
+    <audio id="fullscreenAudio" src="jixaw-metal-pipe-falling-sound.mp3"></audio>
+  </div>
+
+  <div class="f11-popup" id="f11Popup">
+    <div>
+      <p>Druk op F11 of Fn+F11 om de site fullscreen te maken.</p>
+      <button id="f11PopupClose" class="btn btn-primary">OK</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+      document.getElementById('f11Popup').style.display = 'flex';
+    });
+
+    document.getElementById('f11PopupClose').addEventListener('click', () => {
+      document.getElementById('f11Popup').style.display = 'none';
+    });
+
+    const logoutBtn = document.getElementById('logout');
+    const accountForm = document.getElementById('accountForm');
+    let confirmationCount = 0;
+    let moveCount = 0;
+    let swapped = false;
+    let additionalConfirmations = 0;
+
+    function createConfirmationPopup() {
+      const confirmationPopup = document.createElement('div');
+      confirmationPopup.id = 'confirmationPopup';
+      confirmationPopup.style.position = 'fixed';
+      confirmationPopup.style.top = '50%';
+      confirmationPopup.style.left = '50%';
+      confirmationPopup.style.transform = 'translate(-50%, -50%)';
+      confirmationPopup.style.backgroundColor = '#1c1c1c';
+      confirmationPopup.style.color = '#ffffff';
+      confirmationPopup.style.padding = '20px';
+      confirmationPopup.style.borderRadius = '8px';
+      confirmationPopup.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+      confirmationPopup.style.textAlign = 'center';
+      confirmationPopup.style.zIndex = '10000';
+
+      const message = document.createElement('p');
+      message.textContent = 'Weet je zeker dat je wilt uitloggen?';
+      confirmationPopup.appendChild(message);
+
+      const buttonContainer = document.createElement('div');
+      buttonContainer.style.display = 'flex';
+      buttonContainer.style.flexDirection = 'row';
+      buttonContainer.style.justifyContent = 'center';
+      buttonContainer.style.marginTop = '15px';
+      confirmationPopup.appendChild(buttonContainer);
+
+      const confirmBtn = document.createElement('button');
+      confirmBtn.textContent = 'Ja';
+      confirmBtn.className = 'btn btn-primary';
+      buttonContainer.appendChild(confirmBtn);
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.textContent = 'Nee';
+      cancelBtn.className = 'btn btn-secondary';
+      cancelBtn.style.marginLeft = '10px';
+      buttonContainer.appendChild(cancelBtn);
+
+      let swapped = false;
+      let additionalConfirmations = 0;
+
+      confirmBtn.addEventListener('click', () => {
+        if (!swapped) {
+          confirmationCount++;
+          if (confirmationCount < 3) {
+            alert(`Bevestiging ${confirmationCount}/3! Je moet het nog ${3 - confirmationCount} keer bevestigen.`);
+          } else {
+            swapped = true;
+            confirmBtn.style.order = 1;
+            cancelBtn.style.order = 0;
+            alert("Knoppenposities zijn omgewisseld! Klik nog 3 keer op 'Ja'.");
+          }
+        } else {
+          additionalConfirmations++;
+          if (additionalConfirmations < 3) {
+            alert(`Extra bevestiging ${additionalConfirmations}/3! Je moet het nog ${3 - additionalConfirmations} keer bevestigen.`);
+          } else {
+            logoutBtn.style.display = 'block';
+            document.body.removeChild(confirmationPopup);
+            alert("EEEEEEEEEEEEEEEEEEEYY je mag niet uitloggen!!!!!!!!!!!");
+          }
+        }
+      });
+
+      cancelBtn.addEventListener('click', () => {
+        location.reload();
+      });
+
+      confirmationPopup.style.display = 'flex';
+      confirmationPopup.style.flexDirection = 'column';
+      document.body.appendChild(confirmationPopup);
+    }
+
+    accountForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      $('#logoutModal').modal('hide');
+      createConfirmationPopup();
+    });
+
+    logoutBtn.addEventListener('mouseover', () => {
+      moveCount++;
+      if (moveCount >= 10) {
+        document.getElementById('fullscreenPopup').style.display = 'flex';
+        document.getElementById('fullscreenAudio').play();
+
+        setTimeout(() => {
+  if (confirm("Je bent succesvol uitgelogd!")) {
+    location.reload(); // Pagina vernieuwen na klikken op "OK"
+  }
+}, 20000); // 20 seconden vertraging
+      } else {
+        const x = Math.random() * (window.innerWidth - logoutBtn.clientWidth);
+        const y = Math.random() * (window.innerHeight - logoutBtn.clientHeight);
+        logoutBtn.style.left = `${x}px`;
+        logoutBtn.style.top = `${y}px`;
+      }
+    });
+
+        const colors = ["#ffffff", "#a6ff00","#a6ff00", ""]; // Add any colors you like here
+        let index = 0;
+
+        function changeBackgroundColor() {
+            document.body.style.backgroundColor = colors[index];
+            index = (index + 1) % colors.length; // Loop back to the start of the array
+        }
+
+        setInterval(changeBackgroundColor, 120); // Change color every 5 seconds
+  </script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
